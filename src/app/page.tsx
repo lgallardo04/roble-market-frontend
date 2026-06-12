@@ -29,19 +29,7 @@ export default function Home() {
 
   const totalCart = cart.reduce((acc, item) => acc + item.price, 0);
 
-  const [timeLeft, setTimeLeft] = useState({ hours: 12, minutes: 45, seconds: 30 });
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
-        if (prev.minutes > 0) return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
-        if (prev.hours > 0) return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        return prev;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   const addToCart = (product: any) => {
     if (product.stock > 0) {
@@ -87,37 +75,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* FLASH SALES BANNER */}
-      <section className="max-w-6xl mx-auto px-4 pt-8">
-        <div className="bg-gradient-to-r from-[#d9381e] to-[#ff5722] rounded-3xl p-6 md:p-8 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4"></div>
-          
-          <div className="flex-1 relative z-10">
-            <span className="bg-white/20 text-white text-xs font-black px-3 py-1 rounded-full uppercase tracking-widest mb-3 inline-block">Oferta Relámpago</span>
-            <h2 className="text-3xl md:text-4xl font-black mb-2 leading-tight">Combo Desayuno Familiar</h2>
-            <p className="text-white/90 mb-4 text-lg">Harina PAN + Mantequilla + Queso Llanero (1kg)</p>
-            
-            <div className="flex items-center gap-3 bg-black/20 w-fit p-3 rounded-xl border border-white/20">
-              <span className="font-medium text-sm text-white/80 uppercase tracking-widest">Termina en:</span>
-              <div className="flex gap-2 text-xl font-black font-mono">
-                <div className="bg-white text-[#d9381e] w-10 h-10 flex items-center justify-center rounded-lg shadow-inner">{String(timeLeft.hours).padStart(2, '0')}</div>
-                <span className="opacity-80 pt-1">:</span>
-                <div className="bg-white text-[#d9381e] w-10 h-10 flex items-center justify-center rounded-lg shadow-inner">{String(timeLeft.minutes).padStart(2, '0')}</div>
-                <span className="opacity-80 pt-1">:</span>
-                <div className="bg-white text-[#d9381e] w-10 h-10 flex items-center justify-center rounded-lg shadow-inner">{String(timeLeft.seconds).padStart(2, '0')}</div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white/10 p-4 rounded-2xl border border-white/20 backdrop-blur-sm relative z-10 text-center flex flex-col items-center min-w-[200px]">
-            <div className="text-white/60 line-through text-lg mb-1 font-bold">Bs. 12.50</div>
-            <div className="text-4xl font-black mb-3">Bs. 9.99</div>
-            <button className="w-full bg-white text-[#d9381e] hover:bg-stone-100 font-black py-3 rounded-xl shadow-md transition-all active:scale-95">
-              Agregar Combo
-            </button>
-          </div>
-        </div>
-      </section>
+
 
       {/* CATALOG */}
       <section className="max-w-6xl mx-auto p-4 py-10">
