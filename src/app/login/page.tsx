@@ -14,11 +14,18 @@ export default function LoginPage() {
   const [role, setRole] = useState<Role>("customer");
   const [name, setName] = useState("");
 
+  // Campos adicionales requeridos para el cliente
+  const [phone, setPhone] = useState("");
+  const [cedula, setCedula] = useState("");
+  const [isRoblesResident, setIsRoblesResident] = useState(true); // default: vive en Urb. Los Robles
+  const [street, setStreet] = useState("");
+  const [houseNumber, setHouseNumber] = useState("");
+  const [otherAddress, setOtherAddress] = useState("");
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
 
-    // Si se está registrando un nuevo cliente, se asigna automáticamente como 'customer'
     const targetRole = isRegistering ? "customer" : role;
     login(email, targetRole, name);
 
@@ -43,7 +50,7 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen bg-stone-100 dark:bg-stone-950 text-stone-800 dark:text-stone-100 flex flex-col justify-center items-center p-4 transition-colors">
+    <main className="min-h-screen bg-stone-100 dark:bg-stone-950 text-stone-800 dark:text-stone-100 flex flex-col justify-center items-center p-4 transition-colors py-10">
       {/* THEME TOGGLE BUTTON */}
       <div className="absolute top-4 right-4">
         <button
@@ -55,7 +62,7 @@ export default function LoginPage() {
         </button>
       </div>
 
-      <div className="w-full max-w-md bg-white dark:bg-stone-900 rounded-3xl p-8 shadow-xl border border-stone-200 dark:border-stone-800 space-y-6">
+      <div className="w-full max-w-lg bg-white dark:bg-stone-900 rounded-3xl p-6 sm:p-8 shadow-xl border border-stone-200 dark:border-stone-800 space-y-6">
         <div className="text-center">
           <div className="w-16 h-16 bg-[#7bb03b] text-white rounded-full flex items-center justify-center font-black text-2xl mx-auto mb-3 shadow-lg">
             RM
@@ -64,7 +71,7 @@ export default function LoginPage() {
             {isRegistering ? "Crear Cuenta de Cliente" : "Iniciar Sesión"}
           </h1>
           <p className="text-sm text-stone-500 dark:text-stone-400 mt-1">
-            {isRegistering ? "Regístrate para comprar en Roble Market" : "Accede a tu cuenta en Roble Market"}
+            {isRegistering ? "Regístrate para tus compras en Roble Market" : "Accede a tu cuenta en Roble Market"}
           </p>
         </div>
 
@@ -73,7 +80,7 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={() => setIsRegistering(false)}
-            className={`flex-1 py-2 text-xs font-extrabold rounded-xl transition-all ${
+            className={`flex-1 py-2.5 text-xs font-extrabold rounded-xl transition-all ${
               !isRegistering
                 ? "bg-white dark:bg-stone-900 text-stone-900 dark:text-white shadow-sm"
                 : "text-stone-500 dark:text-stone-400"
@@ -87,7 +94,7 @@ export default function LoginPage() {
               setIsRegistering(true);
               setRole("customer");
             }}
-            className={`flex-1 py-2 text-xs font-extrabold rounded-xl transition-all ${
+            className={`flex-1 py-2.5 text-xs font-extrabold rounded-xl transition-all ${
               isRegistering
                 ? "bg-[#7bb03b] text-white shadow-sm"
                 : "text-stone-500 dark:text-stone-400"
@@ -132,11 +139,11 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1">
-              Nombre Completo {isRegistering ? "*" : "(Opcional)"}
+              Nombre Completo *
             </label>
             <input
               type="text"
-              required={isRegistering}
+              required
               placeholder="Ej: Ana María Gómez"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -171,6 +178,123 @@ export default function LoginPage() {
               className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:border-[#7bb03b] transition-colors text-sm font-medium"
             />
           </div>
+
+          {/* CAMPOS ADICIONALES PARA REGISTRO DE CLIENTE */}
+          {isRegistering && (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1">
+                    Número de Teléfono *
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="Ej: 0414-1234567"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:border-[#7bb03b] transition-colors text-sm font-medium"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1">
+                    Cédula de Identidad *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ej: V-12345678"
+                    value={cedula}
+                    onChange={(e) => setCedula(e.target.value)}
+                    className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:border-[#7bb03b] transition-colors text-sm font-medium"
+                  />
+                </div>
+              </div>
+
+              {/* SELECCIÓN BONITA DE DIRECCIÓN: ¿VIVES EN LOS ROBLES? */}
+              <div className="p-4 bg-[#7bb03b]/5 dark:bg-[#7bb03b]/10 border-2 border-[#7bb03b]/30 rounded-2xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-stone-800 dark:text-stone-100 flex items-center gap-1.5">
+                    🏡 ¿Vives en Urb. Los Robles (Araure)?
+                  </span>
+
+                  {/* CASILLA / TOGGLE BONITO */}
+                  <div className="flex bg-white dark:bg-stone-800 p-1 rounded-xl border border-stone-200 dark:border-stone-700">
+                    <button
+                      type="button"
+                      onClick={() => setIsRoblesResident(true)}
+                      className={`px-3 py-1 rounded-lg text-xs font-black transition-all ${
+                        isRoblesResident
+                          ? "bg-[#7bb03b] text-white shadow-sm"
+                          : "text-stone-500 dark:text-stone-400"
+                      }`}
+                    >
+                      Sí
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsRoblesResident(false)}
+                      className={`px-3 py-1 rounded-lg text-xs font-black transition-all ${
+                        !isRoblesResident
+                          ? "bg-stone-700 text-white shadow-sm"
+                          : "text-stone-500 dark:text-stone-400"
+                      }`}
+                    >
+                      No
+                    </button>
+                  </div>
+                </div>
+
+                {/* DESPLIEGUE SEGÚN RESPUESTA */}
+                {isRoblesResident ? (
+                  <div className="grid grid-cols-2 gap-3 pt-1 animate-in fade-in duration-200">
+                    <div>
+                      <label className="block text-[10px] font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
+                        Calle / Avenida *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Ej: Calle 3"
+                        value={street}
+                        onChange={(e) => setStreet(e.target.value)}
+                        className="w-full px-3 py-2 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:border-[#7bb03b] text-xs font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
+                        Número de Casa / Apto *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Ej: Casa #12-A"
+                        value={houseNumber}
+                        onChange={(e) => setHouseNumber(e.target.value)}
+                        className="w-full px-3 py-2 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:border-[#7bb03b] text-xs font-medium"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="pt-1 animate-in fade-in duration-200">
+                    <label className="block text-[10px] font-extrabold uppercase text-stone-500 dark:text-stone-400 mb-1">
+                      Especifica tu Dirección de Entrega *
+                    </label>
+                    <textarea
+                      required
+                      rows={2}
+                      placeholder="Ej: Urb. Villa Antigua, Calle Principal, Casa Nro. 45"
+                      value={otherAddress}
+                      onChange={(e) => setOtherAddress(e.target.value)}
+                      className="w-full p-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:border-[#7bb03b] text-xs font-medium"
+                    />
+                  </div>
+                )}
+              </div>
+            </>
+          )}
 
           {!isRegistering && (
             <div>
