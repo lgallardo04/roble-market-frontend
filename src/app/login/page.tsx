@@ -8,6 +8,7 @@ export default function LoginPage() {
   const { login, theme, toggleTheme } = useAuth();
   const router = useRouter();
 
+  const [isRegistering, setIsRegistering] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<Role>("customer");
@@ -16,9 +17,12 @@ export default function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    login(email, role, name);
-    
-    if (role === "admin" || role === "manager") {
+
+    // Si se está registrando un nuevo cliente, se asigna automáticamente como 'customer'
+    const targetRole = isRegistering ? "customer" : role;
+    login(email, targetRole, name);
+
+    if (targetRole === "admin" || targetRole === "manager") {
       router.push("/admin");
     } else {
       router.push("/");
@@ -56,93 +60,144 @@ export default function LoginPage() {
           <div className="w-16 h-16 bg-[#7bb03b] text-white rounded-full flex items-center justify-center font-black text-2xl mx-auto mb-3 shadow-lg">
             RM
           </div>
-          <h1 className="text-2xl font-black text-stone-900 dark:text-white">Iniciar Sesión</h1>
-          <p className="text-sm text-stone-500 dark:text-stone-400 mt-1">Accede a tu cuenta en Roble Market</p>
+          <h1 className="text-2xl font-black text-stone-900 dark:text-white">
+            {isRegistering ? "Crear Cuenta de Cliente" : "Iniciar Sesión"}
+          </h1>
+          <p className="text-sm text-stone-500 dark:text-stone-400 mt-1">
+            {isRegistering ? "Regístrate para comprar en Roble Market" : "Accede a tu cuenta en Roble Market"}
+          </p>
         </div>
 
-        {/* DEMO ACCESOS RÁPIDOS */}
-        <div className="bg-stone-50 dark:bg-stone-800/50 p-4 rounded-2xl border border-stone-200 dark:border-stone-700/50 space-y-2">
-          <p className="text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 text-center">Acceso Rápido Demo</p>
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              onClick={() => handleQuickDemo("customer")}
-              className="px-2 py-2 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-xs font-bold hover:border-[#7bb03b] transition-colors"
-            >
-              🛒 Cliente
-            </button>
-            <button
-              onClick={() => handleQuickDemo("manager")}
-              className="px-2 py-2 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-xs font-bold hover:border-amber-500 transition-colors"
-            >
-              📦 Encargado
-            </button>
-            <button
-              onClick={() => handleQuickDemo("admin")}
-              className="px-2 py-2 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-xs font-bold hover:border-purple-500 transition-colors"
-            >
-              ⚡ SuperAdmin
-            </button>
-          </div>
+        {/* MODO CONMUTADOR LOGIN / REGISTRO */}
+        <div className="flex bg-stone-100 dark:bg-stone-800 p-1.5 rounded-2xl">
+          <button
+            type="button"
+            onClick={() => setIsRegistering(false)}
+            className={`flex-1 py-2 text-xs font-extrabold rounded-xl transition-all ${
+              !isRegistering
+                ? "bg-white dark:bg-stone-900 text-stone-900 dark:text-white shadow-sm"
+                : "text-stone-500 dark:text-stone-400"
+            }`}
+          >
+            Ingresar
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setIsRegistering(true);
+              setRole("customer");
+            }}
+            className={`flex-1 py-2 text-xs font-extrabold rounded-xl transition-all ${
+              isRegistering
+                ? "bg-[#7bb03b] text-white shadow-sm"
+                : "text-stone-500 dark:text-stone-400"
+            }`}
+          >
+            Registrarme como Cliente
+          </button>
         </div>
+
+        {/* DEMO ACCESOS RÁPIDOS (SOLO EN INICIAR SESIÓN) */}
+        {!isRegistering && (
+          <div className="bg-stone-50 dark:bg-stone-800/50 p-3.5 rounded-2xl border border-stone-200 dark:border-stone-700/50 space-y-2">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 text-center">
+              Acceso Rápido Demo
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => handleQuickDemo("customer")}
+                className="px-2 py-2 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-[11px] font-bold hover:border-[#7bb03b] transition-colors"
+              >
+                🛒 Cliente
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickDemo("manager")}
+                className="px-2 py-2 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-[11px] font-bold hover:border-amber-500 transition-colors"
+              >
+                📦 Encargado
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickDemo("admin")}
+                className="px-2 py-2 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-[11px] font-bold hover:border-purple-500 transition-colors"
+              >
+                ⚡ Admin
+              </button>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1">Nombre Completo (Opcional)</label>
+            <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1">
+              Nombre Completo {isRegistering ? "*" : "(Opcional)"}
+            </label>
             <input
               type="text"
-              placeholder="Ej: Ana María"
+              required={isRegistering}
+              placeholder="Ej: Ana María Gómez"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:border-[#7bb03b] transition-colors"
+              className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:border-[#7bb03b] transition-colors text-sm font-medium"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1">Correo Electrónico</label>
+            <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1">
+              Correo Electrónico *
+            </label>
             <input
               type="email"
               required
               placeholder="correo@ejemplo.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:border-[#7bb03b] transition-colors"
+              className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:border-[#7bb03b] transition-colors text-sm font-medium"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1">Contraseña</label>
+            <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1">
+              Contraseña *
+            </label>
             <input
               type="password"
               required
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:border-[#7bb03b] transition-colors"
+              className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:border-[#7bb03b] transition-colors text-sm font-medium"
             />
           </div>
 
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1">Tipo de Usuario</label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value as Role)}
-              className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:border-[#7bb03b] transition-colors font-bold"
-            >
-              <option value="customer">Cliente Comprador</option>
-              <option value="manager">Encargado de Inventario</option>
-              <option value="admin">Super Administrador</option>
-            </select>
-          </div>
+          {!isRegistering && (
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1">
+                Tipo de Perfil
+              </label>
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value as Role)}
+                className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:border-[#7bb03b] transition-colors font-bold text-xs"
+              >
+                <option value="customer">🛒 Cliente Comprador</option>
+                <option value="manager">📦 Encargado de Inventario</option>
+                <option value="admin">⚡ Super Administrador</option>
+              </select>
+            </div>
+          )}
 
           <button
             type="submit"
-            className="w-full py-4 bg-[#7bb03b] hover:bg-[#5C8A26] text-white font-black rounded-xl shadow-lg shadow-[#7bb03b]/20 transition-all text-base mt-2"
+            className="w-full py-4 bg-[#7bb03b] hover:bg-[#5C8A26] text-white font-black rounded-xl shadow-lg shadow-[#7bb03b]/20 transition-all text-sm mt-2"
           >
-            Ingresar a la Plataforma
+            {isRegistering ? "Crear Mi Cuenta de Cliente" : "Ingresar a la Plataforma"}
           </button>
         </form>
 
-        <div className="text-center">
+        <div className="text-center pt-2">
           <a href="/" className="text-xs font-bold text-[#7bb03b] hover:underline">
             ← Volver al Catálogo Principal
           </a>

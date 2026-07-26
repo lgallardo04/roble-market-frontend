@@ -69,6 +69,12 @@ export default function AdminDashboard() {
     return () => clearTimeout(timer);
   }, []);
 
+  const deleteProduct = (id: number) => {
+    if (confirm("¿Estás seguro de eliminar este producto del inventario?")) {
+      setProducts(products.filter(p => p.id !== id));
+    }
+  };
+
   const toggleStock = (id: number) => {
     setProducts(products.map(p => p.id === id ? { ...p, stock: p.stock > 0 ? 0 : 50 } : p));
   };
@@ -357,16 +363,25 @@ export default function AdminDashboard() {
                         </div>
                       </td>
                       <td className="p-3 text-right">
-                        <button
-                          onClick={() => toggleStock(p.id)}
-                          className={`px-3 py-1.5 rounded-xl font-bold text-[11px] transition-colors ${
-                            p.stock > 0
-                              ? 'bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400 hover:bg-red-100'
-                              : 'bg-green-50 text-green-600 dark:bg-green-950/40 dark:text-green-400 hover:bg-green-100'
-                          }`}
-                        >
-                          {p.stock > 0 ? "Marcar Agotado" : "Reponer (50)"}
-                        </button>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => toggleStock(p.id)}
+                            className={`px-3 py-1.5 rounded-xl font-bold text-[11px] transition-colors ${
+                              p.stock > 0
+                                ? 'bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400 hover:bg-red-100'
+                                : 'bg-green-50 text-green-600 dark:bg-green-950/40 dark:text-green-400 hover:bg-green-100'
+                            }`}
+                          >
+                            {p.stock > 0 ? "Agotado" : "Reponer"}
+                          </button>
+                          <button
+                            onClick={() => deleteProduct(p.id)}
+                            className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg transition-colors text-xs font-bold"
+                            title="Eliminar producto de la base de datos"
+                          >
+                            🗑️
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
