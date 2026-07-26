@@ -30,6 +30,32 @@ export default function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("TODOS");
 
+  // Modal para agregar personal Staff (Admin / Encargado)
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [newStaffName, setNewStaffName] = useState("");
+  const [newStaffEmail, setNewStaffEmail] = useState("");
+  const [newStaffRole, setNewStaffRole] = useState<"admin" | "manager">("manager");
+  const [staffList, setStaffList] = useState([
+    { id: 1, name: "Luis Gallardo (SuperAdmin)", email: "luis.gallardo@roblemarket.com", role: "admin" },
+    { id: 2, name: "Carlos Encargado (Manager)", email: "carlos.encargado@roblemarket.com", role: "manager" }
+  ]);
+
+  const handleAddStaff = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newStaffEmail || !newStaffName) return;
+    const newStaff = {
+      id: Date.now(),
+      name: newStaffName,
+      email: newStaffEmail,
+      role: newStaffRole
+    };
+    setStaffList([...staffList, newStaff]);
+    setShowUserModal(false);
+    setNewStaffName("");
+    setNewStaffEmail("");
+    alert(`✅ Cuenta Staff creada exitosamente para ${newStaffName}`);
+  };
+
   // Modal para agregar/editar producto
   const [showProductModal, setShowProductModal] = useState(false);
   const [newProdName, setNewProdName] = useState("");
@@ -431,28 +457,37 @@ export default function AdminDashboard() {
 
         {/* TAB 4: USUARIOS Y ROLES (EXCLUSIVO SUPERADMIN) */}
         {activeTab === "users" && isSuperAdmin && (
-          <section className="bg-white dark:bg-stone-900 p-6 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-sm space-y-4">
-            <h2 className="text-xl font-black">Gestión de Personal y Permisos</h2>
-            <div className="space-y-3">
-              <div className="p-4 border border-stone-200 dark:border-stone-800 rounded-2xl flex justify-between items-center">
-                <div>
-                  <h4 className="font-bold text-sm">Luis Gallardo (SuperAdmin)</h4>
-                  <p className="text-xs text-stone-500">luis.gallardo@roblemarket.com</p>
-                </div>
-                <span className="px-3 py-1 bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 rounded-full font-black text-xs">
-                  ADMINISTRADOR GLOBAL
-                </span>
+          <section className="bg-white dark:bg-stone-900 p-6 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-sm space-y-6">
+            <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+              <div>
+                <h2 className="text-xl font-black">Gestión de Personal y Cuentas Staff</h2>
+                <p className="text-xs text-stone-500 dark:text-stone-400">Creación exclusiva de cuentas para Encargados y Administradores</p>
               </div>
 
-              <div className="p-4 border border-stone-200 dark:border-stone-800 rounded-2xl flex justify-between items-center">
-                <div>
-                  <h4 className="font-bold text-sm">Carlos Encargado (Manager)</h4>
-                  <p className="text-xs text-stone-500">carlos.encargado@roblemarket.com</p>
+              <button
+                onClick={() => setShowUserModal(true)}
+                className="px-5 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-purple-600/20 transition-all flex items-center gap-2"
+              >
+                👤 Crear Nueva Cuenta Staff
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {staffList.map(staff => (
+                <div key={staff.id} className="p-4 border border-stone-200 dark:border-stone-800 rounded-2xl flex justify-between items-center bg-stone-50/50 dark:bg-stone-800/40">
+                  <div>
+                    <h4 className="font-bold text-sm text-stone-900 dark:text-white">{staff.name}</h4>
+                    <p className="text-xs text-stone-500 dark:text-stone-400">{staff.email}</p>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full font-black text-xs ${
+                    staff.role === 'admin'
+                      ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300'
+                      : 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
+                  }`}>
+                    {staff.role === 'admin' ? '⚡ ADMINISTRADOR GLOBAL' : '📦 ENCARGADO DE INVENTARIO'}
+                  </span>
                 </div>
-                <span className="px-3 py-1 bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 rounded-full font-black text-xs">
-                  ENCARGADO INVENTARIO
-                </span>
-              </div>
+              ))}
             </div>
           </section>
         )}
@@ -543,6 +578,70 @@ export default function AdminDashboard() {
                   className="flex-1 py-3 bg-[#7bb03b] text-white font-bold text-xs rounded-xl shadow-md"
                 >
                   Guardar Producto
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL CREACIÓN DE PERSONAL (SOLO SUPERADMIN) */}
+      {showUserModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-stone-900 rounded-3xl p-6 w-full max-w-md space-y-4 border border-stone-200 dark:border-stone-800 shadow-2xl">
+            <h3 className="text-lg font-black">Crear Cuenta de Personal Staff</h3>
+            <p className="text-xs text-stone-500">Exclusivo para crear cuentas de Encargado o Administrador.</p>
+
+            <form onSubmit={handleAddStaff} className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold uppercase text-stone-400 mb-1">Nombre Completo</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej: Pedro Pérez"
+                  value={newStaffName}
+                  onChange={(e) => setNewStaffName(e.target.value)}
+                  className="w-full p-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-xs outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-stone-400 mb-1">Correo Electrónico</label>
+                <input
+                  type="email"
+                  required
+                  placeholder="pedro.staff@roblemarket.com"
+                  value={newStaffEmail}
+                  onChange={(e) => setNewStaffEmail(e.target.value)}
+                  className="w-full p-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-xs outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold uppercase text-stone-400 mb-1">Rol Asignado</label>
+                <select
+                  value={newStaffRole}
+                  onChange={(e) => setNewStaffRole(e.target.value as "admin" | "manager")}
+                  className="w-full p-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl text-xs font-bold outline-none"
+                >
+                  <option value="manager">📦 Encargado de Inventario</option>
+                  <option value="admin">⚡ Administrador Global</option>
+                </select>
+              </div>
+
+              <div className="flex gap-2 pt-3">
+                <button
+                  type="button"
+                  onClick={() => setShowUserModal(false)}
+                  className="flex-1 py-3 bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-bold text-xs rounded-xl"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 bg-purple-600 text-white font-bold text-xs rounded-xl shadow-md"
+                >
+                  Crear Usuario Staff
                 </button>
               </div>
             </form>
