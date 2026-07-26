@@ -22,17 +22,48 @@ export default function LoginPage() {
   const [houseNumber, setHouseNumber] = useState("");
   const [otherAddress, setOtherAddress] = useState("");
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage("");
+
     if (!email) return;
 
-    const targetRole = isRegistering ? "customer" : role;
-    login(email, targetRole, name);
+    if (isRegistering) {
+      // Simulación de verificación de campos únicos en base de datos (Correo, Cédula, Teléfono)
+      const existingUsers = JSON.parse(localStorage.getItem("rm_registered_users") || "[]");
+      
+      const emailExists = existingUsers.some((u: any) => u.email.toLowerCase() === email.toLowerCase());
+      const cedulaExists = existingUsers.some((u: any) => u.cedula.toLowerCase() === cedula.toLowerCase());
+      const phoneExists = existingUsers.some((u: any) => u.phone === phone);
 
-    if (targetRole === "admin" || targetRole === "manager") {
-      router.push("/admin");
-    } else {
+      if (emailExists) {
+        setErrorMessage("⚠️ Este correo electrónico ya se encuentra registrado.");
+        return;
+      }
+      if (cedulaExists) {
+        setErrorMessage("⚠️ Esta cédula de identidad ya pertenece a una cuenta registrada.");
+        return;
+      }
+      if (phoneExists) {
+        setErrorMessage("⚠️ Este número de teléfono ya está asociado a otra cuenta.");
+        return;
+      }
+
+      // Guardar usuario registrado con datos únicos
+      const newUser = { email, name, phone, cedula, role: "customer" };
+      localStorage.setItem("rm_registered_users", JSON.stringify([...existingUsers, newUser]));
+
+      login(email, "customer", name);
       router.push("/");
+    } else {
+      login(email, role, name);
+      if (role === "admin" || role === "manager") {
+        router.push("/admin");
+      } else {
+        router.push("/");
+      }
     }
   };
 
@@ -296,22 +327,7 @@ export default function LoginPage() {
             </>
           )}
 
-          {!isRegistering && (
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1">
-                Tipo de Perfil
-              </label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value as Role)}
-                className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-xl outline-none focus:border-[#7bb03b] transition-colors font-bold text-xs"
-              >
-                <option value="customer">🛒 Cliente Comprador</option>
-                <option value="manager">📦 Encargado de Inventario</option>
-                <option value="admin">⚡ Super Administrador</option>
-              </select>
-            </div>
-          )}
+
 
           <button
             type="submit"
