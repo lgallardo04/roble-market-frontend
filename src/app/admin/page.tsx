@@ -393,9 +393,9 @@ export default function AdminDashboard() {
               </div>
 
               <div className="bg-white dark:bg-stone-900 p-6 rounded-3xl border border-stone-200 dark:border-stone-800 shadow-sm">
-                <p className="text-xs font-bold text-stone-400 uppercase tracking-wider">Saldo Crédito VIP Otorgado</p>
-                <h3 className="text-3xl font-black text-purple-600 dark:text-purple-400 mt-2">$180.00</h3>
-                <p className="text-xs text-stone-500 mt-1">Cashback de referidos activado</p>
+                <p className="text-xs font-bold text-stone-400 uppercase tracking-wider">Estado de Sincronización DianSoft</p>
+                <h3 className="text-3xl font-black text-[#7bb03b] mt-2">En Línea ⚡</h3>
+                <p className="text-xs text-stone-500 mt-1">Caja Principal Sincronizada</p>
               </div>
             </div>
 

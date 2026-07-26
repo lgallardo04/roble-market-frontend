@@ -123,15 +123,30 @@ export default function Home() {
               </div>
             </a>
 
-            {/* BOTÓN MODO OSCURO & CARRITO EN MÓVIL */}
+            {/* BOTÓN MODO OSCURO & ACCESOS EN MÓVIL */}
             <div className="flex items-center gap-2 md:hidden">
               <button
                 onClick={toggleTheme}
-                className="p-2 bg-stone-100 dark:bg-stone-800 rounded-full text-xs"
+                className="p-2.5 bg-stone-100 dark:bg-stone-800 rounded-full text-xs font-bold"
                 title="Modo Oscuro"
               >
                 {theme === "light" ? "🌙" : "☀️"}
               </button>
+              {user ? (
+                <a
+                  href={user.role === "customer" ? "/account" : "/admin"}
+                  className="px-3 py-1.5 bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 rounded-full text-xs font-extrabold border border-stone-200 dark:border-stone-700"
+                >
+                  {user.role === "customer" ? "👤 Mi Cuenta" : "⚡ Admin"}
+                </a>
+              ) : (
+                <a
+                  href="/login"
+                  className="px-3 py-1.5 bg-[#7bb03b] text-white rounded-full text-xs font-extrabold shadow-sm"
+                >
+                  Ingresar
+                </a>
+              )}
             </div>
           </div>
 
